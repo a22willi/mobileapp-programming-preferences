@@ -19,10 +19,7 @@ public class SecondActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        SharedPreference preference = new SharedPreference();
-
-        myPreferenceRef = preference.getMyPreferenceRef();
-        myPreferenceRef = getPreferences(MODE_PRIVATE);
+        myPreferenceRef = getSharedPreferences("preferences", MODE_PRIVATE);
         myPreferenceEditor = myPreferenceRef.edit();
 
         final TextView editText = findViewById(R.id.editText);

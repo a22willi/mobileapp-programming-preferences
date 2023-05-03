@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences myPreferenceRef;
+    private SharedPreferences.Editor myPreferenceEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,10 +23,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        SharedPreference preference = new SharedPreference();
-
-        myPreferenceRef = preference.getMyPreferenceRef();
-        myPreferenceRef = getPreferences(MODE_PRIVATE);
+        myPreferenceRef = getSharedPreferences("preferences", MODE_PRIVATE);
+        myPreferenceEditor = myPreferenceRef.edit();
         updatePreferenceText();
 
         Button editData = findViewById(R.id.editData);
@@ -38,17 +37,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    protected void onResume(Bundle savedInstanceState) {
+
+    @Override
+    public void onResume(){
+        super.onResume();
         updatePreferenceText();
     }
 
     private void updatePreferenceText() {
         TextView preferenceView = findViewById(R.id.preferenceText);
         preferenceView.setText(myPreferenceRef.getString("MyPersistentData", "No preference found."));
+        myPreferenceEditor.apply();
         System.out.println("persistent data: " + myPreferenceRef.getString("MyPersistentData", "No preference found."));
-    }
-
-    protected SharedPreferences getMyPreferenceRef() {
-        return this.myPreferenceRef;
     }
 }
