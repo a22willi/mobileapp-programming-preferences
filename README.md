@@ -1,42 +1,46 @@
 
 # Rapport
 
-**Skriv din rapport här!**
+**Assignment 6: Shared preferences**
 
-_Du kan ta bort all text som finns sedan tidigare_.
-
-## Följande grundsyn gäller dugga-svar:
-
-- Ett kortfattat svar är att föredra. Svar som är längre än en sida text (skärmdumpar och programkod exkluderat) är onödigt långt.
-- Svaret skall ha minst en snutt programkod.
-- Svaret skall inkludera en kort övergripande förklarande text som redogör för vad respektive snutt programkod gör eller som svarar på annan teorifråga.
-- Svaret skall ha minst en skärmdump. Skärmdumpar skall illustrera exekvering av relevant programkod. Eventuell text i skärmdumpar måste vara läsbar.
-- I de fall detta efterfrågas, dela upp delar av ditt svar i för- och nackdelar. Dina för- respektive nackdelar skall vara i form av punktlistor med kortare stycken (3-4 meningar).
-
-Programkod ska se ut som exemplet nedan. Koden måste vara korrekt indenterad då den blir lättare att läsa vilket gör det lättare att hitta syntaktiska fel.
-
+Jag påbörjade projektet genom att experimentera med shared preferences utifrån de instruktioner jag hittade på kurshemsidan.
+Varpå jag förstått principen bakom lades shared preference variabler till som privata klassvariabler:
 ```
-function errorCallback(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            // Geolocation API stöds inte, gör något
-            break;
-        case error.POSITION_UNAVAILABLE:
-            // Misslyckat positionsanrop, gör något
-            break;
-        case error.UNKNOWN_ERROR:
-            // Okänt fel, gör något
-            break;
+private SharedPreferences myPreferenceRef;
+private SharedPreferences.Editor myPreferenceEditor;
+```
+Därefter skapades secondactivity. Dess layout-fil modifierads sedan till att inkludera en editText för att kunna mata 
+in data, samt en knapp för att spara den data man matat in.
+För att spara data skapades en onclickListener på knappen genom följande kod:
+```
+saveButton.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        myPreferenceEditor.putString("MyPersistentData", editText.getText().toString());
+        myPreferenceEditor.apply();
+        finish();
     }
+});
+```
+Inuti listenern sparas den inmatade texten som en shared preference i nyckeln MyPersistentData. 
+Därefter kommer man tillbaka till MainActivity genom finish. Jag använder finish() istället för att skapa en ny intent
+delvis för att det är smidigare, men främst för att man inte lägger till fler activities än nödvändigt i "activity back stack".
+
+Till sist läses den sparade datan ifrån MainActivity genom följande kod:
+```
+private void updatePreferenceText() {
+    TextView preferenceView = findViewById(R.id.preferenceText);
+    preferenceView.setText(myPreferenceRef.getString("MyPersistentData", "No preference found."));
+    myPreferenceEditor.apply();
+    System.out.println("persistent data: " + myPreferenceRef.getString("MyPersistentData", "No preference found."));
 }
 ```
 
-Bilder läggs i samma mapp som markdown-filen.
+Det främsta problemet jag stötte på under utförandet av denna uppfift var att den data som matades in
+i SecondActivity inte visades i MainActivity. Problemet var att jag använt mig av funktionen getPreference() istället
+för getSharedPreference. Detta var ett problem eftersom getSharedPreference hämtar data oberoende av Activity, medan getPreference
+låses till den Activity som data sparas.
 
-![](android.png)
-
-Läs gärna:
-
-- Boulos, M.N.K., Warren, J., Gong, J. & Yue, P. (2010) Web GIS in practice VIII: HTML5 and the canvas element for interactive online mapping. International journal of health geographics 9, 14. Shin, Y. &
-- Wunsche, B.C. (2013) A smartphone-based golf simulation exercise game for supporting arthritis patients. 2013 28th International Conference of Image and Vision Computing New Zealand (IVCNZ), IEEE, pp. 459–464.
-- Wohlin, C., Runeson, P., Höst, M., Ohlsson, M.C., Regnell, B., Wesslén, A. (2012) Experimentation in Software Engineering, Berlin, Heidelberg: Springer Berlin Heidelberg.
+_Resultatet blev följande:_.
+![](second_activity.png)
+![](main_activity.png)
